@@ -1,0 +1,4 @@
+deployment_name: api
+destination_path: /var/www/html/api-chatbot/
+repository_url: git@zola-octanoviar/api-chatbot.git
+repository_branch: master
