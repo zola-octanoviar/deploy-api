@@ -6,6 +6,6 @@
   vars_files:
     - vars.yml
 
-tasks:
-- name: "Checkout"
-    git: repo={{repository_url}} dest={{repository_url}} version={{repository_branch}}
+  tasks:
+  - name: "Checkout"
+      git: repo={{repository_url}} dest={{repository_url}} version={{repository_branch}}
