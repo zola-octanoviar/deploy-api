@@ -7,5 +7,16 @@
     - vars.yml
 
   tasks:
-  - name: "Checkout"
-      git: repo={{repository_url}} dest={{repository_url}} version={{repository_branch}}
+  - git:
+      repo: https://github.com/zola-octanoviar/api-chatbot.git
+      dest: /home/ubuntu/api-chatbot/
+      force: yes
+
+  - name: sync  from git to folder
+    command: mv /home/ubuntu/api-chatbot/ /var/www/html/api-chatbot/
+
+#  - name: sync  from git to folder
+#    synchronize:
+#      src: /home/ubuntu/api-chatbot/
+#      dest: /var/www/html/api-chatbot/
+#      delegate_to: webserver
