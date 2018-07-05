@@ -13,7 +13,7 @@
       force: yes
 
   - name: sync  from git to folder
-    command: mv /home/ubuntu/api-chatbot/ /var/www/html/api-chatbot/
+    command: cp -r /home/ubuntu/api-chatbot/ /var/www/html/api-chatbot/
 
 #  - name: sync  from git to folder
 #    synchronize:
