@@ -1,0 +1,44 @@
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+DO
+$body$
+BEGIN
+    IF NOT EXISTS (
+        SELECT *
+        FROM   pg_catalog.pg_user
+        WHERE  usename = 'scraping_server') THEN
+
+        CREATE USER scraping_server
+        WITH NOSUPERUSER NOCREATEDB NOCREATEROLE
+        ENCRYPTED PASSWORD 'password';
+    END IF;
+END
+$body$;
+
+GRANT ALL PRIVILEGES ON SCHEMA scrape TO scraping_server;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE scraping_server IN SCHEMA scrape
+GRANT ALL PRIVILEGES ON TABLES TO scraping_server;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE scraping_server IN SCHEMA scrape
+GRANT ALL PRIVILEGES ON SEQUENCES TO scraping_server;
+
+GRANT USAGE ON SCHEMA ops TO scraping_server;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE ops_server IN SCHEMA ops
+GRANT SELECT ON TABLES TO scraping_server;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE scraping_server IN SCHEMA scrape
+GRANT SELECT ON TABLES TO ops_server;
+
+
+--------------------------------------------------------------------------------
+
+GRANT USAGE ON SCHEMA scrape TO readonly_users;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE scraping_server IN SCHEMA scrape
+GRANT SELECT ON TABLES TO readonly_users;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE scraping_server IN SCHEMA scrape
+GRANT EXECUTE ON FUNCTIONS TO readonly_users;

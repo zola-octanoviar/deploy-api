@@ -1,0 +1,73 @@
+- hosts: ec2-18-206-57-23.compute-1.amazonaws.com
+  remote_user: ubuntu
+  become: true
+  become_method: sudo
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: "set system time to local time if not yet set"
+      timezone:
+        name: Asia/Jakarta
+
+    - name: "install common packages"
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: true
+      with_items:
+        - htop
+        - python-pip
+
+    - name: "install required postgresql packages"
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: true
+      with_items:
+        - postgresql
+
+    - name: "install dependency to run postgresql_db"
+      pip:
+        name: "{{ item }}"
+      with_items:
+        - psycopg2
+        - pgcli
+
+
+    - name: "create psql settings"
+      template:
+        src: dot_psqlrc-10.j2
+        dest: /var/lib/postgresql/.psqlrc-10
+        owner: postgres
+        group: postgres
+
+    - name: "create bash settings"
+      template:
+        src: dot_profile.j2
+        dest: /var/lib/postgresql/.profile
+        owner: postgres
+        group: postgres
+
+    - name: "ensure database is created"
+      become_user: postgres
+      postgresql_db:
+        name: "{{ item }}"
+        encoding: UTF-8
+        lc_collate: en_US.UTF-8
+        lc_ctype: en_US.UTF-8
+        template: template0
+        state: present
+      with_items:
+        - kpdb
+
+    - name: "create SQL scripts"
+      template:
+        src: "{{ item }}.sql.j2"
+        dest: "/var/lib/postgresql/{{ item }}.sql"
+        owner: postgres
+        group: postgres
+      with_items:
+        - setup_database
+        - create_roles
